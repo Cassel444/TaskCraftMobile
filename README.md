@@ -28,6 +28,7 @@ It helps teams and individuals organize, track, and complete tasks efficiently �
 
 ## 🧩 Project Structure
 
+```sh
 src/
 ├── api/ # API calls
 ├── app/ # Screens and navigation
@@ -38,9 +39,11 @@ src/
 ├── types/ # TypeScript types
 ├── validation/ # Validation schemas
 └── queryClient.ts # React Query client
+```
 
 ---
 
+````
 ## ⚙️ Installation & Setup
 
 ## Step 1: Clone the repository
@@ -48,7 +51,7 @@ src/
 ```sh
 git clone https://github.com/Cassel444/TaskCraftMobile.git
 cd TaskCraftMobile
-```
+````
 
 ## Step 2: Install dependencies
 
