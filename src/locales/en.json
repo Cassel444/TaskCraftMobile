@@ -1,0 +1,115 @@
+{
+  "welcome_page": {
+    "title": "Welcome to TaskCraft!",
+    "subtitle": "Bring ideas to life. Control the process. Create your own task space.",
+    "button_start": "Get Started",
+    "checkpoint_dream": "Dream",
+    "checkpoint_start": "Start",
+    "checkpoint_execution": "Execution",
+    "checkpoint_challenges": "Challenges",
+    "checkpoint_result": "Result",
+    "checkpoint_success": "Success",
+    "card_title_organization": "Task Organization",
+    "card_desc_organization": "Plan your daily routine",
+    "card_title_control": "Progress Control",
+    "card_desc_control": "Track progress easily",
+    "card_title_motivation": "Motivation & Success",
+    "card_desc_motivation": "Visualize achievements and stay inspired.",
+    "card_title_goals": "Personal Goals",
+    "card_desc_goals": "Create personal goals and track their completion.",
+    "card_title_planning": "Progress & Planning",
+    "card_desc_planning": "Track task completion through calendar and analytics.",
+    "card_title_statistics": "Statistics",
+    "card_desc_statistics": "View analytics and visualizations of your progress.",
+    "card_title_events": "Events & Reminders",
+    "card_desc_events": "Don't miss important events and deadlines.",
+    "card_title_notes": "Ideas & Notes",
+    "card_desc_notes": "Save thoughts and ideas directly in the app.",
+    "cookie_title": "🍪 Cookie Usage",
+    "cookie_text": "We use necessary cookies to ensure the site works and analytical cookies to improve your experience. By continuing to use the site, you agree to our <a href=\"auth/privacy-policy\">Privacy Policy</a> and <a href=\"auth/cookie-policy\">Cookie Policy</a>.",
+    "cookie_btn_all": "Accept all",
+    "cookie_btn_necessary": "Necessary only"
+  },
+  "register": {
+    "title": "Create Account",
+    "label_name": "Name",
+    "placeholder_name": "Your name",
+    "label_email": "Email",
+    "placeholder_email": "username@gmail.com",
+    "label_password": "Password",
+    "placeholder_password": "min 6 characters",
+    "label_confirm_password": "Confirm Password",
+    "placeholder_confirmPassword": "re-enter password",
+    "checkbox_agreement": "I agree to the <0>Terms of Service</0> and <1>Privacy Policy</1>",
+    "button_submit": "Create Account"
+  },
+  "toast": {
+    "registration_success": "Registration completed!",
+    "email_send_error": "Error sending confirmation email",
+    "registration_failed": "Registration failed",
+    "unexpected_error": "Unexpected error occurred",
+    "login_success": "Login success"
+  },
+  "validation": {
+    "required": "Required",
+    "email_invalid": "Please enter a valid email",
+    "name_invalid_chars": "Use letters, spaces, apostrophes, or hyphens",
+    "field_required": "This field is required",
+    "min_length_value": "Min {{value}} characters",
+    "max_length_value": "Max {{value}} characters",
+
+    "name_min_2": "Name must be at least 2 characters",
+    "name_max_50": "Name must be at most 50 characters",
+    "password_min_6": "Password must be at least 6 characters",
+
+    "passwords_must_match": "Passwords must match",
+    "password_confirm_required": "Please confirm your password",
+    "must_agree_to_policy": "You must accept the privacy policy"
+  },
+  "yup": {
+    "mixed": {
+      "required": "This field is required",
+      "oneOf": "Must match one of the following: ${values}"
+    },
+    "string": {
+      "min": "Must be at least ${min} characters",
+      "max": "Must be at most ${max} characters",
+      "email": "Must be a valid email address"
+    }
+  },
+  "login": {
+    "title": "Login",
+    "label_email": "Email",
+    "placeholder_email": "username@gmail.com",
+    "label_password": "Password",
+    "placeholder_password": "password",
+    "forgot_password": "Forgot Password?",
+    "button_login": "Log In",
+    "aria_show_password": "Show password",
+    "aria_hide_password": "Hide password",
+    "aria_login_google": "Login with Google"
+  },
+  "reset_password_request": {
+    "title": "Send Reset Link",
+    "label_email": "Enter your email",
+    "placeholder_email": "username@gmail.com",
+    "button_send": "Send Reset Link",
+    "back_link": "Back to authorization",
+    "success_message": "We sent you a password reset link. Please check your email."
+  },
+  "reset_password": {
+    "title": "Password Reset",
+    "label_password": "New Password",
+    "label_confirm_password": "Confirm Password",
+    "placeholder_password": "min 6 characters",
+    "button_submit": "Reset Password",
+    "back_to_login": "Already have an account?",
+    "aria_show_password": "Show password",
+    "aria_hide_password": "Hide password",
+    "toggle_password_alt": "Toggle Password Visibility"
+  },
+  "auth_switcher": {
+    "tab_register": "Create Account",
+    "tab_login": "Log In"
+  }
+}

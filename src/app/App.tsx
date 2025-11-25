@@ -1,11 +1,15 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
-import AppNavigator from './navigation/AppNavigator';
+import AuthGate from '../components/AuthGate';
+import linking from './navigation/linking';
+import '../i18n';
+import { useGoogleCallback } from '../hooks/useGoogleCallback';
 
 export default function App() {
+  useGoogleCallback();
   return (
-    <NavigationContainer>
-      <AppNavigator />
+    <NavigationContainer linking={linking}>
+      <AuthGate />
     </NavigationContainer>
   );
 }
