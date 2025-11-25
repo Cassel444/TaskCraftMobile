@@ -6,9 +6,10 @@
     "noImplicitAny": false,
     "esModuleInterop": true,
     "allowJs": true,
+    "lib": ["esnext", "dom"],
     "typeRoots": ["./node_modules/@types", "./src/types"]
   },
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": ["**/*.ts", "**/*.tsx", "src/118n/index.js"],
   "exclude": [
     "node_modules",
     "babel.config.js",

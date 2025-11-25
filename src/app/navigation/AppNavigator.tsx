@@ -1,17 +1,20 @@
 import React from 'react';
+import { View } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import WelcomeScreen from '../screens/WelcomeScreen';
-import LoginScreen from '../screens/LoginScreen';
-import RegisterScreen from '../screens/RegisterScreen';
+import Welcome from '../screens/WelcomeScreen';
+import AuthNavigator from './AuthNavigator';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {
   return (
-    <Stack.Navigator initialRouteName="Welcome">
-      <Stack.Screen name="Welcome" component={WelcomeScreen} />
-      <Stack.Screen name="Login" component={LoginScreen} />
-      <Stack.Screen name="Register" component={RegisterScreen} />
-    </Stack.Navigator>
+    <View style={{ flex: 1 }}>
+      <LanguageSwitcher />
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Welcome" component={Welcome} />
+        <Stack.Screen name="Auth" component={AuthNavigator} />
+      </Stack.Navigator>
+    </View>
   );
 }
