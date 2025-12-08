@@ -1,15 +1,29 @@
 import React, { useState } from 'react';
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  Animated,
+} from 'react-native';
 import { useTranslation } from 'react-i18next';
 import RegisterForm from '../../components/RegisterForm';
 import LoginForm from '../../components/LoginForm';
+import { useFadeAnimation } from '../../hooks/animations/useFadeAnimation';
 
 export default function AuthSwitcher() {
   const { t } = useTranslation();
   const [isRegister, setIsRegister] = useState(true);
 
+  const { fadeAnim, translateY, fadeOut } = useFadeAnimation();
+
   return (
-    <View style={styles.container}>
+    <Animated.View
+      style={[
+        styles.container,
+        { opacity: fadeAnim, transform: [{ translateY }] },
+      ]}
+    >
       <View style={styles.tabContainer}>
         <TouchableOpacity
           style={[styles.tabButton, isRegister && styles.activeTab]}
@@ -41,9 +55,13 @@ export default function AuthSwitcher() {
       </View>
 
       <View style={styles.formContainer}>
-        {isRegister ? <RegisterForm /> : <LoginForm />}
+        {isRegister ? (
+          <RegisterForm parentFadeOut={fadeOut} />
+        ) : (
+          <LoginForm parentFadeOut={fadeOut} />
+        )}
       </View>
-    </View>
+    </Animated.View>
   );
 }
 
@@ -52,8 +70,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 24,
     paddingTop: 20,
-
-    // backgroundColor: 'transparent',
   },
   tabContainer: {
     flexDirection: 'row',

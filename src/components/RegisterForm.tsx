@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -9,23 +9,29 @@ import {
   ScrollView,
   Animated,
   Alert,
+  Linking,
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../types/types';
+import type { RootStackParamList } from '../types/paramList/types';
 import { useRegister } from '../hooks/useRegister';
 import SvgGoogle from '../assets/logo/SvgGoogle';
 import EyeShow from '../assets/logo/SvgEyeShow';
 import EyeHide from '../assets/logo/SvgEyeHide';
-import { useGoogleAuth } from '../hooks/useGoogleAuth';
 import PrivacyTermsModal from './PrivacyTermsModal';
+import { createRegisterSchema } from '../validation/validationSchema';
+import { useSendMagicLink } from '../hooks/users/currentUser/useSendMagicLink';
+import { isAxiosError } from 'axios';
+import { useFadeAnimation } from '../hooks/animations/useFadeAnimation';
+import { API_BASE_URL } from '../config/api';
 
-type RegisterScreenNavigationProp =
-  NativeStackNavigationProp<RootStackParamList>;
+type RegisterScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'RegisterForm'
+>;
 
 interface RegisterFormData {
   username: string;
@@ -35,234 +41,224 @@ interface RegisterFormData {
   privacyPolicy: boolean;
 }
 
-export default function RegisterForm() {
-  const { t } = useTranslation();
-  const navigation = useNavigation<RegisterScreenNavigationProp>();
+interface RegisterFormProps {
+  parentFadeOut: () => Promise<void>;
+}
 
-  const { register, loading } = useRegister(() => {
-    navigation.replace('Home');
-  });
-  const { signInWithGoogle, loading: googleLoading } = useGoogleAuth();
-
+export default function RegisterForm({ parentFadeOut }: RegisterFormProps) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(30)).current;
+  const { mutate: registerUser, isPending: isRegistering } = useRegister();
+  const { mutate: sendLink, isPending: isSendingLink } = useSendMagicLink();
+  const isPending = isRegistering || isSendingLink;
 
-  const registerSchema = yup.object({
-    username: yup
-      .string()
-      .required(t('validation.required'))
-      .min(2, t('validation.name_min_2'))
-      .max(50, t('validation.name_max_50')),
-    email: yup
-      .string()
-      .email(t('validation.email_invalid'))
-      .required(t('validation.required')),
-    password: yup
-      .string()
-      .min(6, t('validation.password_min_6'))
-      .required(t('validation.required')),
-    confirmPassword: yup
-      .string()
-      .oneOf([yup.ref('password')], t('validation.passwords_must_match'))
-      .required(t('validation.password_confirm_required')),
-    privacyPolicy: yup
-      .boolean()
-      .oneOf([true], t('validation.must_agree_to_policy'))
-      .required(),
-  });
+  const { t } = useTranslation();
+  const registerSchema = createRegisterSchema(t);
 
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-      Animated.timing(translateY, {
-        toValue: 0,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, []);
+  const navigation = useNavigation<RegisterScreenNavigationProp>();
+
+  const { fadeAnim, translateY, fadeOut } = useFadeAnimation();
 
   const {
     control,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm({
+  } = useForm<RegisterFormData>({
     resolver: yupResolver(registerSchema),
     mode: 'onBlur',
   });
 
   const onSubmit = async (data: RegisterFormData) => {
-    try {
-      const res = await register({
+    registerUser(
+      {
         username: data.username,
         email: data.email,
         password: data.password,
         confirmPassword: data.confirmPassword,
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
-      });
-      reset();
-      Alert.alert(
-        t('toast.registration_success'),
-        `Welcome, ${res.user?.username || ''}`,
-      );
-    } catch (err: any) {
-      Alert.alert(
-        t('toast.unexpected_error'),
-        err?.message || 'Registration failed',
-      );
+      },
+      {
+        onSuccess: (response) => {
+          Alert.alert(t('toast.registration_success'));
+          const user = response?.user;
+
+          if (!user?.isActive) {
+            sendLink(
+              { email: data.email },
+              {
+                onSuccess: () => {
+                  reset();
+                  navigation.replace('CheckEmail');
+                },
+                onError: () => Alert.alert(t('toast.unexpected_error')),
+              },
+            );
+          } else {
+            navigation.replace('Home');
+          }
+        },
+        onError: (error) => {
+          Alert.alert(
+            isAxiosError(error)
+              ? error.response?.data?.message || t('toast.registration_failed')
+              : t('toast.unexpected_error'),
+          );
+        },
+      },
+    );
+  };
+
+  const googleAuth = async () => {
+    try {
+      const url = `${API_BASE_URL}auth/google?redirect_uri=taskcraft://auth/google/callback`;
+      await Linking.openURL(url);
+    } catch (err) {
+      console.error('Google register error:', err);
     }
   };
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-      showsVerticalScrollIndicator={false}
+    <Animated.View
+      style={[
+        styles.container,
+        { opacity: fadeAnim, transform: [{ translateY }] },
+      ]}
     >
-      <Animated.View
-        style={[
-          styles.inner,
-          { opacity: fadeAnim, transform: [{ translateY }] },
-        ]}
-      >
-        <Text style={styles.title}>{t('register.title')}</Text>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.inner}>
+          <Text style={styles.title}>{t('register.title')}</Text>
 
-        {/* Username */}
-        <Text style={styles.label}>{t('register.label_name')}</Text>
-        <Controller
-          control={control}
-          name="username"
-          render={({ field: { onChange, value } }) => (
-            <TextInput
-              style={styles.input}
-              placeholder={t('register.placeholder_name')}
-              value={value}
-              onChangeText={onChange}
-            />
-          )}
-        />
-        <View style={styles.errorContainer}>
-          {errors.username && (
-            <Text style={styles.error}>{errors.username.message}</Text>
-          )}
-        </View>
-
-        {/* Email */}
-        <Text style={styles.label}>{t('register.label_email')}</Text>
-        <Controller
-          control={control}
-          name="email"
-          render={({ field: { onChange, value } }) => (
-            <TextInput
-              style={styles.input}
-              placeholder={t('register.placeholder_email')}
-              value={value}
-              onChangeText={onChange}
-              keyboardType="email-address"
-            />
-          )}
-        />
-        <View style={styles.errorContainer}>
-          {errors.email && (
-            <Text style={styles.error}>{errors.email.message}</Text>
-          )}
-        </View>
-
-        {/* Password */}
-        <Text style={styles.label}>{t('register.label_password')}</Text>
-        <Controller
-          control={control}
-          name="password"
-          render={({ field: { onChange, value } }) => (
-            <View style={styles.inputWrapper}>
+          {/* Username */}
+          <Text style={styles.label}>{t('register.label_name')}</Text>
+          <Controller
+            control={control}
+            name="username"
+            render={({ field: { onChange, value } }) => (
               <TextInput
                 style={styles.input}
-                secureTextEntry={!showPassword}
-                placeholder={t('register.placeholder_password')}
+                placeholder={t('register.placeholder_name')}
                 value={value}
                 onChangeText={onChange}
               />
-              <TouchableOpacity
-                style={styles.iconButton}
-                onPress={() => setShowPassword((s) => !s)}
-              >
-                {showPassword ? <EyeShow /> : <EyeHide />}
-              </TouchableOpacity>
-            </View>
-          )}
-        />
-        <View style={styles.errorContainer}>
-          {errors.password && (
-            <Text style={styles.error}>{errors.password.message}</Text>
-          )}
-        </View>
+            )}
+          />
+          <View style={styles.errorContainer}>
+            {errors.username && (
+              <Text style={styles.error}>{errors.username.message}</Text>
+            )}
+          </View>
 
-        {/* Confirm Password */}
-        <Text style={styles.label}>{t('register.label_confirm_password')}</Text>
-        <Controller
-          control={control}
-          name="confirmPassword"
-          render={({ field: { onChange, value } }) => (
-            <View style={styles.inputWrapper}>
+          {/* Email */}
+          <Text style={styles.label}>{t('register.label_email')}</Text>
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, value } }) => (
               <TextInput
                 style={styles.input}
-                secureTextEntry={!showConfirmPassword}
-                placeholder={t('register.placeholder_confirmPassword')}
+                placeholder={t('register.placeholder_email')}
                 value={value}
                 onChangeText={onChange}
+                keyboardType="email-address"
               />
-              <TouchableOpacity
-                style={styles.iconButton}
-                onPress={() => setShowConfirmPassword((s) => !s)}
-              >
-                {showConfirmPassword ? <EyeShow /> : <EyeHide />}
-              </TouchableOpacity>
-            </View>
-          )}
-        />
-        <View style={styles.errorContainer}>
-          {errors.confirmPassword && (
-            <Text style={styles.error}>{errors.confirmPassword.message}</Text>
-          )}
-        </View>
+            )}
+          />
+          <View style={styles.errorContainer}>
+            {errors.email && (
+              <Text style={styles.error}>{errors.email.message}</Text>
+            )}
+          </View>
 
-        {/* Privacy Policy */}
-        <PrivacyTermsModal control={control} />
-        <View style={styles.errorContainer}>
-          {errors.privacyPolicy && (
-            <Text style={styles.error}>{errors.privacyPolicy.message}</Text>
-          )}
-        </View>
+          {/* Password */}
+          <Text style={styles.label}>{t('register.label_password')}</Text>
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, value } }) => (
+              <View style={styles.inputWrapper}>
+                <TextInput
+                  style={styles.input}
+                  secureTextEntry={!showPassword}
+                  placeholder={t('register.placeholder_password')}
+                  value={value}
+                  onChangeText={onChange}
+                />
+                <TouchableOpacity
+                  style={styles.iconButton}
+                  onPress={() => setShowPassword((s) => !s)}
+                >
+                  {showPassword ? <EyeShow /> : <EyeHide />}
+                </TouchableOpacity>
+              </View>
+            )}
+          />
+          <View style={styles.errorContainer}>
+            {errors.password && (
+              <Text style={styles.error}>{errors.password.message}</Text>
+            )}
+          </View>
 
-        {/* Submit button */}
-        <TouchableOpacity
-          onPress={handleSubmit(onSubmit)}
-          style={[styles.button, loading && styles.buttonDisabled]}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>{t('register.button_submit')}</Text>
-          )}
-        </TouchableOpacity>
-        {/* Google button */}
-        <TouchableOpacity
-          onPress={signInWithGoogle}
-          style={[styles.button, googleLoading && styles.buttonDisabled]}
-          disabled={googleLoading}
-        >
-          {googleLoading ? <ActivityIndicator color="#fff" /> : <SvgGoogle />}
-        </TouchableOpacity>
-      </Animated.View>
-    </ScrollView>
+          {/* Confirm Password */}
+          <Text style={styles.label}>
+            {t('register.label_confirm_password')}
+          </Text>
+          <Controller
+            control={control}
+            name="confirmPassword"
+            render={({ field: { onChange, value } }) => (
+              <View style={styles.inputWrapper}>
+                <TextInput
+                  style={styles.input}
+                  secureTextEntry={!showConfirmPassword}
+                  placeholder={t('register.placeholder_confirmPassword')}
+                  value={value}
+                  onChangeText={onChange}
+                />
+                <TouchableOpacity
+                  style={styles.iconButton}
+                  onPress={() => setShowConfirmPassword((s) => !s)}
+                >
+                  {showConfirmPassword ? <EyeShow /> : <EyeHide />}
+                </TouchableOpacity>
+              </View>
+            )}
+          />
+          <View style={styles.errorContainer}>
+            {errors.confirmPassword && (
+              <Text style={styles.error}>{errors.confirmPassword.message}</Text>
+            )}
+          </View>
+
+          {/* Privacy Policy */}
+          <PrivacyTermsModal control={control} />
+          <View style={styles.errorContainer}>
+            {errors.privacyPolicy && (
+              <Text style={styles.error}>{errors.privacyPolicy.message}</Text>
+            )}
+          </View>
+
+          {/* Submit button */}
+          <TouchableOpacity
+            onPress={handleSubmit(onSubmit)}
+            style={[styles.button, isPending && styles.buttonDisabled]}
+            disabled={isPending}
+          >
+            {isPending ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>
+                {t('register.button_submit')}
+              </Text>
+            )}
+          </TouchableOpacity>
+          {/* Google button */}
+          <TouchableOpacity onPress={googleAuth} style={styles.button}>
+            <SvgGoogle />
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </Animated.View>
   );
 }
 

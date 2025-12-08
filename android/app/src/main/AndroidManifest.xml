@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.taskcraftmobile">
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -30,7 +31,16 @@
                 android:scheme="taskcraft"
                 android:host="auth"
                 android:pathPrefix="/google/callback" />
-       </intent-filter>
+        </intent-filter>
+        <intent-filter android:autoVerify="true">
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.DEFAULT" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data
+                android:scheme="taskcraft"
+                android:host="auth"
+                android:pathPrefix="/reset-password" />
+        </intent-filter>
       </activity>
     </application>
 </manifest>

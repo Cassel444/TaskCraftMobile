@@ -11,6 +11,11 @@ import Svg, { Polyline, Circle } from 'react-native-svg';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import LinearGradient from 'react-native-linear-gradient';
+import { RootStackParamList } from '../../types/paramList/types';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+type WelcomeScreenNavigationProp =
+  NativeStackNavigationProp<RootStackParamList>;
 
 const checkpoints = [
   { x: 50, y: 200, labelKey: 'checkpoint_dream', color: '#FF5722', value: 5 },
@@ -41,7 +46,7 @@ const checkpoints = [
 
 export default function Welcome() {
   const { t } = useTranslation();
-  const navigation = useNavigation();
+  const navigation = useNavigation<WelcomeScreenNavigationProp>();
 
   const fadeAnim = new Animated.Value(1.0);
   const scaleAnim = new Animated.Value(0.5);
@@ -58,7 +63,7 @@ export default function Welcome() {
   }, []);
 
   const handleStart = () => {
-    navigation.navigate('Auth' as never);
+    navigation.navigate('Auth');
   };
 
   return (
@@ -142,7 +147,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: 'transparent',
+    // backgroundColor: 'transparent',
   },
   logo: { width: 50, height: 50 },
   title: {

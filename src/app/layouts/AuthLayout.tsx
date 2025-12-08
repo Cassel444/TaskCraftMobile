@@ -5,8 +5,8 @@ interface AuthLayoutProps {
   children: React.ReactNode;
 }
 
-const bg1 = require('../../assets/bg/overlay_back.webp');
-const bg2 = require('../../assets/bg/back_task_craft.webp');
+import bg1 from '../../assets/bg/overlay_back.webp';
+import bg2 from '../../assets/bg/back_task_craft.webp';
 
 export default function AuthLayout({ children }: AuthLayoutProps) {
   const fadeAnim = useRef(new Animated.Value(0)).current;

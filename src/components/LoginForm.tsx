@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
+import { isAxiosError } from 'axios';
 import {
   View,
   Text,
@@ -9,19 +10,21 @@ import {
   ScrollView,
   Alert,
   Animated,
+  Linking,
 } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 import { useTranslation } from 'react-i18next';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../types/types';
+import type { RootStackParamList } from '../types/paramList/types';
 import EyeShow from '../assets/logo/SvgEyeShow';
 import EyeHide from '../assets/logo/SvgEyeHide';
 import SvgGoogle from '../assets/logo/SvgGoogle';
 import { useLogin } from '../hooks/useLogin';
-import { useGoogleAuth } from '../hooks/useGoogleAuth';
+import { useFadeAnimation } from '../hooks/animations/useFadeAnimation';
+import { createLoginSchema } from '../validation/validationSchema';
+import { API_BASE_URL } from '../config/api';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -29,44 +32,20 @@ interface LoginFormValues {
   email: string;
   password: string;
 }
+interface LoginFormProps {
+  parentFadeOut: () => Promise<void>;
+}
 
-export default function LoginForm() {
+export default function LoginForm({ parentFadeOut }: LoginFormProps) {
   const [showPassword, setShowPassword] = useState(false);
+  const { mutate: login, isPending: isLoginPending } = useLogin();
+
   const { t } = useTranslation();
+  const loginSchema = createLoginSchema(t);
+
   const navigation = useNavigation<LoginScreenNavigationProp>();
-  const { login, loading } = useLogin(() => {
-    navigation.replace('Home');
-  });
-  const { signInWithGoogle, loading: googleLoading } = useGoogleAuth();
 
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(30)).current;
-
-  const loginSchema = yup.object({
-    email: yup
-      .string()
-      .email(t('validation.email_invalid'))
-      .required(t('validation.required')),
-    password: yup
-      .string()
-      .min(6, t('validation.password_min_6'))
-      .required(t('validation.required')),
-  });
-
-  useEffect(() => {
-    Animated.parallel([
-      Animated.timing(fadeAnim, {
-        toValue: 1,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-      Animated.timing(translateY, {
-        toValue: 0,
-        duration: 500,
-        useNativeDriver: true,
-      }),
-    ]).start();
-  }, []);
+  const { fadeAnim, translateY, fadeOut } = useFadeAnimation();
 
   const {
     control,
@@ -79,118 +58,138 @@ export default function LoginForm() {
   });
 
   const onSubmit = async (data: LoginFormValues) => {
-    try {
-      const res = await login({
+    login(
+      {
         email: data.email,
         password: data.password,
-      });
-      reset();
-      Alert.alert(t('toast.login_success'), res.message);
-    } catch (err: any) {
-      Alert.alert(t('toast.unexpected_error'), err?.message || 'Login failed');
+      },
+      {
+        onSuccess: async () => {
+          reset();
+          Alert.alert(t('toast.login_success'));
+          await new Promise((res) => setTimeout(res, 1500));
+          navigation.replace('Home');
+        },
+        onError: (error) => {
+          Alert.alert(
+            isAxiosError(error)
+              ? error.response?.data?.message || t('toast.login_failed_api')
+              : t('toast.unexpected_error'),
+          );
+        },
+      },
+    );
+  };
+
+  const googleAuth = async () => {
+    try {
+      const url = `${API_BASE_URL}auth/google?redirect_uri=taskcraft://auth/google/callback`;
+      await Linking.openURL(url);
+    } catch (err) {
+      console.error('Google register error:', err);
     }
   };
 
   return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-      showsVerticalScrollIndicator={false}
+    <Animated.View
+      style={[
+        styles.container,
+        { opacity: fadeAnim, transform: [{ translateY }] },
+      ]}
     >
-      <Animated.View
-        style={[
-          styles.inner,
-          { opacity: fadeAnim, transform: [{ translateY }] },
-        ]}
-      >
-        <Text style={styles.title}>{t('login.title')}</Text>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.inner}>
+          <Text style={styles.title}>{t('login.title')}</Text>
 
-        {/* Email */}
-        <Text style={styles.label}>{t('login.label_email')}</Text>
-        <Controller
-          control={control}
-          name="email"
-          render={({ field: { onChange, value } }) => (
-            <TextInput
-              style={styles.input}
-              placeholder={t('login.placeholder_email')}
-              keyboardType="email-address"
-              value={value}
-              onChangeText={onChange}
-            />
-          )}
-        />
-        <View style={styles.errorContainer}>
-          {errors.email && (
-            <Text style={styles.error}>{errors.email.message}</Text>
-          )}
-        </View>
-
-        {/* Password */}
-        <Text style={styles.label}>{t('login.label_password')}</Text>
-        <Controller
-          control={control}
-          name="password"
-          render={({ field: { onChange, value } }) => (
-            <View style={styles.inputWrapper}>
+          {/* Email */}
+          <Text style={styles.label}>{t('login.label_email')}</Text>
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, value } }) => (
               <TextInput
                 style={styles.input}
-                secureTextEntry={!showPassword}
-                placeholder={t('login.placeholder_password')}
+                placeholder={t('login.placeholder_email')}
+                keyboardType="email-address"
                 value={value}
                 onChangeText={onChange}
               />
-              <TouchableOpacity
-                style={styles.iconButton}
-                onPress={() => setShowPassword((s) => !s)}
-              >
-                {showPassword ? <EyeShow /> : <EyeHide />}
-              </TouchableOpacity>
-            </View>
-          )}
-        />
-        <View style={styles.errorContainer}>
-          {errors.password && (
-            <Text style={styles.error}>{errors.password.message}</Text>
-          )}
-        </View>
-
-        {/* Forgot Password */}
-        <TouchableOpacity
-          style={styles.forgotLink}
-          onPress={() => navigation.replace('ResetEmail')}
-        >
-          <Text style={styles.linkText}>{t('login.forgot_password')}</Text>
-        </TouchableOpacity>
-
-        <View style={styles.actionButtons}>
-          {/* Login button */}
-          <TouchableOpacity
-            style={[styles.authButton, loading && styles.buttonDisabled]}
-            onPress={handleSubmit(onSubmit)}
-            disabled={loading}
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.buttonText}>{t('login.button_login')}</Text>
             )}
+          />
+          <View style={styles.errorContainer}>
+            {errors.email && (
+              <Text style={styles.error}>{errors.email.message}</Text>
+            )}
+          </View>
+
+          {/* Password */}
+          <Text style={styles.label}>{t('login.label_password')}</Text>
+          <Controller
+            control={control}
+            name="password"
+            render={({ field: { onChange, value } }) => (
+              <View style={styles.inputWrapper}>
+                <TextInput
+                  style={styles.input}
+                  secureTextEntry={!showPassword}
+                  placeholder={t('login.placeholder_password')}
+                  value={value}
+                  onChangeText={onChange}
+                />
+                <TouchableOpacity
+                  style={styles.iconButton}
+                  onPress={() => setShowPassword((s) => !s)}
+                >
+                  {showPassword ? <EyeShow /> : <EyeHide />}
+                </TouchableOpacity>
+              </View>
+            )}
+          />
+          <View style={styles.errorContainer}>
+            {errors.password && (
+              <Text style={styles.error}>{errors.password.message}</Text>
+            )}
+          </View>
+
+          {/* Forgot Password */}
+          <TouchableOpacity
+            style={styles.forgotLink}
+            onPress={async () => {
+              await parentFadeOut(); // дочека́тися зникнення
+              navigation.replace('EmailForm'); // потім перейти
+            }}
+          >
+            <Text style={styles.linkText}>{t('login.forgot_password')}</Text>
           </TouchableOpacity>
 
-          {/* Google button */}
-          <TouchableOpacity
-            style={[
-              styles.authButton,
-              styles.googleButton,
-              googleLoading && styles.buttonDisabled,
-            ]}
-            onPress={signInWithGoogle}
-            disabled={googleLoading}
-          >
-            {googleLoading ? <ActivityIndicator color="#fff" /> : <SvgGoogle />}
-          </TouchableOpacity>
+          <View style={styles.actionButtons}>
+            {/* Login button */}
+            <TouchableOpacity
+              style={[
+                styles.authButton,
+                isLoginPending && styles.buttonDisabled,
+              ]}
+              onPress={handleSubmit(onSubmit)}
+              disabled={isLoginPending}
+            >
+              {isLoginPending ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.buttonText}>{t('login.button_login')}</Text>
+              )}
+            </TouchableOpacity>
+
+            {/* Google button */}
+            <TouchableOpacity
+              style={[styles.authButton, styles.googleButton]}
+              onPress={googleAuth}
+            >
+              <SvgGoogle />
+            </TouchableOpacity>
+          </View>
         </View>
-      </Animated.View>
-    </ScrollView>
+      </ScrollView>
+    </Animated.View>
   );
 }
 
