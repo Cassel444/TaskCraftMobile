@@ -1,4 +1,4 @@
-// import { Board } from './board';
+import { Board } from './board';
 
 export interface UserWithoutPassword {
   id: string;
@@ -19,5 +19,5 @@ export interface UserWithoutPassword {
   pendingEmail?: string | null;
   currentStreak?: number;
   longestStreak?: number;
-  // WorkDesk?: Board[];
+  WorkDesk?: Board[];
 }

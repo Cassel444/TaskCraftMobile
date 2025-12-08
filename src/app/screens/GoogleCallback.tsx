@@ -1,37 +1,16 @@
 import { useEffect } from 'react';
-import { Linking } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../../types/types';
+import { ActivityIndicator, View } from 'react-native';
 
-type GoogleCallbackNavigationProp =
-  NativeStackNavigationProp<RootStackParamList>;
-
-export default function GoogleCallbackScreen() {
-  const navigation = useNavigation<GoogleCallbackNavigationProp>();
-
+export default function GoogleCallbackScreen({ navigation }) {
   useEffect(() => {
-    const processUrl = async () => {
-      const url = await Linking.getInitialURL();
-      if (!url) return;
-
-      const params = new URLSearchParams(url.split('?')[1] ?? '');
-
-      const access = params.get('accessToken');
-      const refresh = params.get('refreshToken');
-
-      if (access) await AsyncStorage.setItem('accessToken', access);
-      if (refresh) await AsyncStorage.setItem('refreshToken', refresh);
-
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Home' }],
-      });
-    };
-
-    processUrl();
+    // тут ти можеш зробити запит getCurrentUser
+    // бо бекенд УЖЕ поставив кукі
+    navigation.replace('Home');
   }, []);
 
-  return null;
+  return (
+    <View>
+      <ActivityIndicator />
+    </View>
+  );
 }

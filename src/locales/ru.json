@@ -48,7 +48,8 @@
     "email_send_error": "Ошибка отправки письма для подтверждения",
     "registration_failed": "Ошибка регистрации",
     "unexpected_error": "Произошла непредвиденная ошибка",
-    "login_success": "Вход успешный"
+    "login_success": "Вход успешный",
+    "login_failed_api": "Не удалось получить данные пользователя после входа"
   },
   "validation": {
     "required": "Обязательное поле",

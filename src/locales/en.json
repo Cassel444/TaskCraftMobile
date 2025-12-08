@@ -48,7 +48,8 @@
     "email_send_error": "Error sending confirmation email",
     "registration_failed": "Registration failed",
     "unexpected_error": "Unexpected error occurred",
-    "login_success": "Login success"
+    "login_success": "Login success",
+    "login_failed_api": "Failed to get user after login"
   },
   "validation": {
     "required": "Required",

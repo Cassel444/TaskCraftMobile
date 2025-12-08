@@ -1,11 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
 import { Text, TouchableOpacity, View } from 'react-native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import type { RootStackParamList } from '../../types/types';
+import type { RootStackParamList } from '../../types/paramList/types';
 
 type HomeNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-export function Home() {
+export default function Home() {
   const navigation = useNavigation<HomeNavigationProp>();
   return (
     <View>
@@ -16,6 +16,7 @@ export function Home() {
             fontSize: 30,
             justifyContent: 'center',
             alignItems: 'center',
+            backgroundColor: 'black',
           }}
         >
           This is a home. Press me

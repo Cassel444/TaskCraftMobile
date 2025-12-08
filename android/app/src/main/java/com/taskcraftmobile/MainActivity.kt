@@ -1,5 +1,7 @@
 package com.taskcraftmobile
 
+import android.content.Intent
+import android.os.Bundle
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.fabricEnabled
@@ -19,4 +21,12 @@ class MainActivity : ReactActivity() {
    */
   override fun createReactActivityDelegate(): ReactActivityDelegate =
       DefaultReactActivityDelegate(this, mainComponentName, fabricEnabled)
+
+  override fun onNewIntent(intent: Intent?) {
+      super.onNewIntent(intent)
+      if (intent != null) {
+          setIntent(intent) // оновлюємо поточний Intent
+        }
+    }
 }
+

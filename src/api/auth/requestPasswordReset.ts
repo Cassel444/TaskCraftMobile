@@ -1,6 +1,6 @@
 import api from '../api';
 
-export interface RequestPasswordResetData {
+export interface requestPasswordResetData {
   email: string;
 }
 
@@ -9,7 +9,7 @@ export interface PasswordResetResponse {
 }
 
 export const requestPasswordReset = async (
-  data: RequestPasswordResetData,
+  data: requestPasswordResetData,
 ): Promise<PasswordResetResponse> => {
   const response = await api.post<PasswordResetResponse>(
     'auth/request-password-reset',

@@ -7,21 +7,12 @@ export interface LoginCredentials {
 
 export interface LoginResponse {
   message: string;
-  access_token: string;
 }
 
 export const loginUser = async (
   credentials: LoginCredentials,
 ): Promise<LoginResponse> => {
-  try {
-    const response = await api.post<LoginResponse>('auth/login', credentials);
-    return response.data;
-  } catch (err: any) {
-    console.log('Login error:', err?.response || err);
-
-    const message =
-      err?.response?.data?.message || 'Login failed. Please try again later.';
-
-    throw { message };
-  }
+  const response = await api.post<LoginResponse>('auth/login', credentials);
+  console.log('LoginResponse', response.data);
+  return response.data;
 };

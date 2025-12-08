@@ -1,12 +1,12 @@
 const linking = {
   prefixes: ['taskcraft://'],
-
   config: {
     screens: {
       GoogleCallback: 'auth/google/callback',
+      ResetPasswordForm: 'auth/reset-password',
       Home: 'home',
-      Login: 'login',
-      Register: 'register',
+      LoginForm: 'login',
+      RegisterForm: 'register',
     },
   },
 };

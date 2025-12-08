@@ -1,59 +1,75 @@
-import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios, { AxiosResponse } from 'axios';
 import { API_BASE_URL } from '../config/api';
+import { refreshToken } from './auth/refreshToken';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 5000,
-  withCredentials: false,
-  headers: {
-    'Content-Type': 'application/json',
-  },
+  withCredentials: true,
 });
 
-// ---------- REQUEST INTERCEPTOR ----------
-api.interceptors.request.use(async (config: InternalAxiosRequestConfig) => {
-  const token = await AsyncStorage.getItem('accessToken');
+let isRefreshing = false;
 
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
+interface FailedRequest {
+  resolve: (value: AxiosResponse) => void;
+  reject: (reason?: unknown) => void;
+}
 
-  return config;
-});
+let failedQueue: FailedRequest[] = [];
 
-// ---------- RESPONSE INTERCEPTOR ----------
+// Очистка черги при логауті
+export const handleLogoutCleanup = () => {
+  failedQueue.forEach(({ reject }) => reject(new Error('User logged out')));
+  failedQueue = [];
+  isRefreshing = false;
+};
+
+// Обробка черги після оновлення токена
+const processQueue = (
+  error: unknown,
+  response: AxiosResponse | null = null,
+) => {
+  failedQueue.forEach(({ resolve, reject }) => {
+    if (error) reject(error);
+    else if (response) resolve(response);
+  });
+  failedQueue = [];
+};
+
+// Response interceptor
 api.interceptors.response.use(
-  (res) => res,
-  async (error: AxiosError) => {
-    const originalRequest = error.config as InternalAxiosRequestConfig & {
-      _retry?: boolean;
-    };
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
 
-    // Якщо 401 і ще не пробували оновлюватись
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // 401 і не retry, і не login/refresh
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !['auth/refresh', 'auth/login'].some((path) =>
+        originalRequest.url.includes(path),
+      )
+    ) {
       originalRequest._retry = true;
 
-      const refresh = await AsyncStorage.getItem('refreshToken');
-      if (!refresh) return Promise.reject(error);
+      if (isRefreshing) {
+        return new Promise<AxiosResponse>((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        });
+      }
+
+      isRefreshing = true;
 
       try {
-        const refreshResponse = await api.post('auth/refresh', {
-          refreshToken: refresh,
-        });
-
-        const newAccess = refreshResponse.data.accessToken;
-        const newRefresh = refreshResponse.data.refreshToken;
-
-        await AsyncStorage.setItem('accessToken', newAccess);
-        await AsyncStorage.setItem('refreshToken', newRefresh);
-
-        originalRequest.headers.Authorization = `Bearer ${newAccess}`;
-
-        return api(originalRequest);
-      } catch (e) {
-        await AsyncStorage.multiRemove(['accessToken', 'refreshToken']);
-        return Promise.reject(e);
+        await refreshToken(); // оновити токен через HttpOnly кукі
+        const newResponse = await api(originalRequest); // повторюємо оригінальний запит
+        processQueue(null, newResponse);
+        return newResponse;
+      } catch (err) {
+        console.error('Refresh token failed:', err);
+        handleLogoutCleanup(); // очищаємо чергу
+        return Promise.reject(err);
+      } finally {
+        isRefreshing = false;
       }
     }
 
