@@ -4,9 +4,6 @@ const linking = {
     screens: {
       GoogleCallback: 'auth/google/callback',
       ResetPasswordForm: 'auth/reset-password',
-      Home: 'home',
-      LoginForm: 'login',
-      RegisterForm: 'register',
     },
   },
 };

@@ -78,7 +78,7 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
           Alert.alert(t('toast.password_reset_success'));
           await new Promise((res) => setTimeout(res, 1500));
 
-          navigation.replace('Home');
+          navigation.navigate('Home');
         },
         onError: () => Alert.alert(t('toast.password_reset_failed')),
       },
@@ -178,7 +178,7 @@ export default function ResetPasswordForm({ token }: ResetPasswordFormProps) {
             {/* Reset button */}
             <TouchableOpacity
               style={[styles.authButton, isPending && styles.buttonDisabled]}
-              onPress={handleSubmit(onSubmit)}
+              onPress={() => handleSubmit(onSubmit)()}
               disabled={isPending}
             >
               {isPending ? (

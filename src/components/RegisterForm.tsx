@@ -28,10 +28,8 @@ import { isAxiosError } from 'axios';
 import { useFadeAnimation } from '../hooks/animations/useFadeAnimation';
 import { API_BASE_URL } from '../config/api';
 
-type RegisterScreenNavigationProp = NativeStackNavigationProp<
-  RootStackParamList,
-  'RegisterForm'
->;
+type RegisterScreenNavigationProp =
+  NativeStackNavigationProp<RootStackParamList>;
 
 interface RegisterFormData {
   username: string;
@@ -240,7 +238,7 @@ export default function RegisterForm({ parentFadeOut }: RegisterFormProps) {
 
           {/* Submit button */}
           <TouchableOpacity
-            onPress={handleSubmit(onSubmit)}
+            onPress={() => handleSubmit(onSubmit)()}
             style={[styles.button, isPending && styles.buttonDisabled]}
             disabled={isPending}
           >

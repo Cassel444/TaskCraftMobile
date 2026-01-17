@@ -169,7 +169,7 @@ export default function LoginForm({ parentFadeOut }: LoginFormProps) {
                 styles.authButton,
                 isLoginPending && styles.buttonDisabled,
               ]}
-              onPress={handleSubmit(onSubmit)}
+              onPress={() => handleSubmit(onSubmit)()}
               disabled={isLoginPending}
             >
               {isLoginPending ? (

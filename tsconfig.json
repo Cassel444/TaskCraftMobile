@@ -1,6 +1,7 @@
 {
   "extends": "@react-native/typescript-config",
   "compilerOptions": {
+    "customConditions": ["react-native-strict-api", "react-native"],
     "jsx": "react-native",
     "strict": true,
     "noImplicitAny": false,

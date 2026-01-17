@@ -13,6 +13,8 @@ import { useTranslation } from 'react-i18next';
 import LinearGradient from 'react-native-linear-gradient';
 import { RootStackParamList } from '../../types/paramList/types';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { GradientButton } from '../../components/GradientButton';
+import { gradient } from '../../styles/gradient';
 
 type WelcomeScreenNavigationProp =
   NativeStackNavigationProp<RootStackParamList>;
@@ -81,18 +83,15 @@ export default function Welcome() {
 
       {/* Кнопка "Почати" */}
       <View style={{ width: '100%', maxWidth: 300 }}>
-        <TouchableOpacity onPress={handleStart}>
-          <LinearGradient
-            colors={['#00C9FF', '#92FE9D']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={styles.button}
-          >
-            <Text style={styles.buttonText}>
-              {t('welcome_page.button_start')}
-            </Text>
-          </LinearGradient>
-        </TouchableOpacity>
+        <GradientButton
+          style={styles.button}
+          gradient={gradient}
+          onPress={handleStart}
+        >
+          <Text style={styles.buttonText}>
+            {t('welcome_page.button_start')}
+          </Text>
+        </GradientButton>
       </View>
 
       {/* Графік */}
@@ -164,7 +163,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   button: {
-    padding: 12,
+    paddingVertical: 12,
     borderRadius: 8,
     marginVertical: 50,
   },

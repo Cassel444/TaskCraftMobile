@@ -110,5 +110,70 @@
   "auth_switcher": {
     "tab_register": "Создать Аккаунт",
     "tab_login": "Войти"
+  },
+  "home": {
+    "sidebar_open_aria": "Открыть сайдбар",
+    "subtitle": "Управляй проектами. Достигай целей. Создавай будущее.",
+    "greeting_prefix": "Добро пожаловать в TaskCraft!",
+    "greeting_username_suffix": ", здесь ты можешь организовать свои задачи и достичь любых целей.",
+    "greeting_email_suffix": "здесь ты можешь организовать свои задачи и достичь любых целей.",
+    "greeting_default": "Организуй задачи, отслеживай прогресс и достигай целей эффективнее.",
+    "calendar_btn": "Календарь",
+    "create_board_btn": "Создать доску",
+    "hero_image_alt": "Человек с идеей"
+  },
+  "sidebar": {
+    "boards": "Доски",
+    "analytics": "Аналитика",
+    "achievements": "Достижения",
+    "calendar": "Календарь",
+    "support": "Поддержка"
+  },
+  "menu": {
+    "home": "Домой",
+    "menu": "Меню",
+    "boards": "Доски",
+    "profile": "Профиль",
+    "logout": "Выйти"
+  },
+  "main": {
+    "page_title": "Меню",
+    "menu": {
+      "boards": "Доски",
+      "calendar": "Календарь",
+      "analytics": "Аналитика",
+      "achievements": "Достижения",
+      "search": "Поиск",
+      "update": "Обновления"
+    }
+  },
+  "auth": {
+    "user_not_authenticated": "Пользователь не авторизован"
+  },
+  "modal": {
+    "close_alt": "Закрыть модальное окно",
+    "creating": "Создание...",
+    "chars_left": "{{count}} символов осталось",
+    "confirmDeleteTitle": "Подтвердите удаление",
+    "deleteMessage": "Вы уверены, что хотите удалить этот элемент? Это действие необратимо.",
+    "closeButtonAria": "Закрыть модальное окно",
+    "statusUnlocked": "Разблокировано",
+    "statusLocked": "Заблокировано",
+    "dateLabel": "Получено:",
+    "lockedMessage": "Выполните условия, чтобы разблокировать это достижение"
+  },
+  "modal_create_board": {
+    "title": "Создать доску",
+    "placeholder_name": "Имя доски",
+    "placeholder_description": "Описание доски",
+    "error_duplicate_name": "Доска с таким именем уже существует. Выберите другое имя.",
+    "success_toast": "Доска успешно создана!",
+    "error_toast": "Не удалось создать доску",
+    "create_btn": "Создать"
+  },
+  "validationn": {
+    "title_required": "Требуется заголовок",
+    "min_length_3": "Минимум 3 символа",
+    "max_chars_reached": "Максимум символов достигнут"
   }
 }
