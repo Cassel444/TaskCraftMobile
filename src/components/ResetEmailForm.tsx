@@ -153,7 +153,7 @@ export default function EmailForm() {
                 styles.authButton,
                 isSendMessage && styles.buttonDisabled,
               ]}
-              onPress={handleSubmit(onSubmit)}
+              onPress={() => handleSubmit(onSubmit)()}
               disabled={isSendMessage}
             >
               {isSendMessage ? (

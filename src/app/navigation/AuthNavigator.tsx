@@ -23,7 +23,7 @@ export default function AuthNavigator() {
         <Stack.Screen name="GoogleCallback" component={GoogleCallbackScreen} />
         <Stack.Screen name="EmailForm" component={EmailForm} />
         <Stack.Screen name="CheckEmail" component={CheckEmailScreen} />
-        <Stack.Screen name="ResetPassword" component={ResetPasswordForm} />
+        {/* <Stack.Screen name="ResetPassword" component={ResetPasswordForm} /> */}
       </Stack.Navigator>
     </AuthLayout>
   );

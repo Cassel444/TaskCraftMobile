@@ -110,5 +110,70 @@
   "auth_switcher": {
     "tab_register": "Створити Акаунт",
     "tab_login": "Вхід"
+  },
+  "home": {
+    "sidebar_open_aria": "Відкрити бічну панель",
+    "subtitle": "Керуйте проєктами. Досягайте цілей. Створюйте майбутнє.",
+    "greeting_prefix": "Ласкаво просимо в TaskCraft!",
+    "greeting_username_suffix": ", тут ви можете організувати свої завдання та досягти будь-яких цілей.",
+    "greeting_email_suffix": "Тут ви можте організувати свої завдання та досягти будь-яких цілей.",
+    "greeting_default": "Упорядковуйте свої завдання, відстежуйте свій прогрес та ефективніше досягайте своїх цілей.",
+    "calendar_btn": "Календар",
+    "create_board_btn": "Створити дошку",
+    "hero_image_alt": "Людина з ідеєю"
+  },
+  "sidebar": {
+    "boards": "Дошки",
+    "analytics": "Аналітика",
+    "achievements": "Досягнення",
+    "calendar": "Календар",
+    "support": "Підтримка"
+  },
+  "menu": {
+    "home": "Додому",
+    "menu": "Меню",
+    "boards": "Дошки",
+    "profile": "Профіль",
+    "logout": "Вийти"
+  },
+  "main": {
+    "page_title": "Меню",
+    "menu": {
+      "boards": "Дошки",
+      "calendar": "Календар",
+      "analytics": "Аналітика",
+      "achievements": "Досягнення",
+      "search": "Пошук",
+      "update": "Оновлення"
+    }
+  },
+  "auth": {
+    "user_not_authenticated": "Користувач не авторизований"
+  },
+  "modal": {
+    "close_alt": "Закрити модальне вікно",
+    "creating": "Створення...",
+    "chars_left": "{{count}} символів залишилось",
+    "confirmDeleteTitle": "Підтвердити видалення",
+    "deleteMessage": "Ви впевнені, що хочете видалити цей елемент? Ця дія є незворотною.",
+    "closeButtonAria": "Закрити модальне вікно",
+    "statusUnlocked": "Розблоковано",
+    "statusLocked": "Заблоковано",
+    "dateLabel": "Отримано:",
+    "lockedMessage": "Виконайте умови, щоб розблокувати це досягнення"
+  },
+  "modal_create_board": {
+    "title": "Створити дошку",
+    "placeholder_name": "Назва дошки",
+    "placeholder_description": "Опис дошки",
+    "error_duplicate_name": "Дошка з такою назвою вже існує. Виберіть іншу назву.",
+    "success_toast": "Дошку успішно створено!",
+    "error_toast": "Не вдалося створити дошку",
+    "create_btn": "Створити"
+  },
+  "validationn": {
+    "title_required": "Потрібна назва",
+    "min_length_3": "Мінімум 3 символи",
+    "max_chars_reached": "Досягнуто максимальної кількості символів"
   }
 }

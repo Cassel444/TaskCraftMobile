@@ -45,11 +45,14 @@ export default function LanguageSwitcher() {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: '#1f2a45',
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 20,
+    borderBottomWidth: 0.5,
+    borderBottomColor: 'grey',
   },
 
   buttons: {
@@ -64,5 +67,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
   },
   active: { backgroundColor: '#ffbf00' },
-  text: { color: '#2f3640', fontWeight: '600' },
+  text: { color: 'white', fontWeight: '600' },
 });

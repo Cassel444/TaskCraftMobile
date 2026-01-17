@@ -112,5 +112,70 @@
   "auth_switcher": {
     "tab_register": "Create Account",
     "tab_login": "Log In"
+  },
+  "home": {
+    "sidebar_open_aria": "Open Sidebar",
+    "subtitle": "Manage projects. Achieve goals. Create the future.",
+    "greeting_prefix": "Welcome to TaskCraft!",
+    "greeting_username_suffix": ", here you can organize your tasks and achieve any goals.",
+    "greeting_email_suffix": ", here you can organize your tasks and achieve any goals.",
+    "greeting_default": "Organize tasks, track progress, and achieve goals more effectively.",
+    "calendar_btn": "Calendar",
+    "create_board_btn": "Create Board",
+    "hero_image_alt": "Man with an idea"
+  },
+  "sidebar": {
+    "boards": "Boards",
+    "analytics": "Analytics",
+    "achievements": "Achievements",
+    "calendar": "Calendar",
+    "support": "Support"
+  },
+  "menu": {
+    "home": "Home",
+    "menu": "Menu",
+    "boards": "Boards",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "main": {
+    "page_title": "Main Page",
+    "menu": {
+      "boards": "Boards",
+      "calendar": "Calendar",
+      "analytics": "Analytics",
+      "achievements": "Achievements",
+      "search": "Search",
+      "update": "Update"
+    }
+  },
+  "auth": {
+    "user_not_authenticated": "User not authenticated"
+  },
+  "modal": {
+    "close_alt": "Close modal",
+    "creating": "Creating...",
+    "chars_left": "{{count}} characters left",
+    "confirmDeleteTitle": "Confirm Deletion",
+    "deleteMessage": "Are you sure you want to delete this item? This action cannot be undone.",
+    "closeButtonAria": "Close",
+    "statusUnlocked": "Unlocked",
+    "statusLocked": "Locked",
+    "dateLabel": "Unlocked date:",
+    "lockedMessage": "Complete the requirements to unlock this achievement"
+  },
+  "modal_create_board": {
+    "title": "Create board",
+    "placeholder_name": "Board name",
+    "placeholder_description": "Board description",
+    "error_duplicate_name": "Board with this name already exists. Choose another name.",
+    "success_toast": "Board created successfully!",
+    "error_toast": "Failed to create board",
+    "create_btn": "Create"
+  },
+  "validationn": {
+    "title_required": "Title is required",
+    "min_length_3": "Minimum 3 characters",
+    "max_chars_reached": "Maximum characters reached"
   }
 }
